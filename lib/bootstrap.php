@@ -63,6 +63,9 @@ if (empty($_CONFIG['base_url'])) {
 if (empty($_CONFIG['site_name'])) {
     $_CONFIG['site_name'] = $e('SITE_NAME', 'Find Diesel Repair');
 }
+if (empty($_CONFIG['contact_email']) && $e('CONTACT_EMAIL')) {
+    $_CONFIG['contact_email'] = $e('CONTACT_EMAIL');
+}
 
 // Composer autoload
 if (file_exists($projectRoot . '/vendor/autoload.php')) {
