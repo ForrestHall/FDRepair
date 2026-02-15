@@ -15,8 +15,8 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
 
     <!-- SEO Title & Meta -->
     <title><?php echo htmlspecialchars($siteName); ?> | Enter Your ZIP – Find Closest Diesel Repair Shops Near You</title>
-    <meta name="description" content="Find diesel repair shops and mobile diesel mechanics near you. Enter your ZIP code for a list sorted by distance. RV diesel, pickup truck, heavy equipment—get service fast.">
-    <meta name="keywords" content="diesel repair near me, diesel mechanic, mobile diesel repair, RV diesel repair, diesel truck repair, heavy duty diesel">
+    <meta name="description" content="Find diesel repair shops and mobile diesel mechanics near you. Enter your ZIP code for a list sorted by distance. HD trucks, MD trucks, heavy duty, fleet—get service fast.">
+    <meta name="keywords" content="diesel repair near me, heavy duty truck repair, medium duty truck repair, HD diesel mechanic, diesel truck repair, mobile diesel repair, fleet diesel">
     <meta name="author" content="<?php echo htmlspecialchars($siteName); ?>">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 
@@ -28,7 +28,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl . '/'); ?>">
     <meta property="og:title" content="<?php echo htmlspecialchars($siteName); ?> | Find Closest Diesel Repair Shops">
-    <meta property="og:description" content="Enter your ZIP to find diesel repair facilities and mobile mechanics sorted by distance. RV diesel, trucks, heavy equipment.">
+    <meta property="og:description" content="Enter your ZIP to find diesel repair facilities and mobile mechanics sorted by distance. HD and MD trucks, heavy duty, fleet service.">
     <meta property="og:image" content="<?php echo htmlspecialchars($ogImage); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -38,7 +38,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?php echo htmlspecialchars($siteName); ?> | Find Closest Diesel Repair">
-    <meta name="twitter:description" content="Enter your ZIP code to find diesel repair shops and mobile mechanics sorted by distance.">
+    <meta name="twitter:description" content="Enter your ZIP to find diesel repair shops for HD and MD trucks, fleet, heavy duty—sorted by distance.">
     <meta name="twitter:image" content="<?php echo htmlspecialchars($ogImage); ?>">
 
     <!-- Preconnect for performance -->
@@ -70,11 +70,11 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
     </script>
     <!-- Schema: Organization -->
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"Organization","name":"<?php echo htmlspecialchars($siteName); ?>","url":"<?php echo htmlspecialchars($canonicalUrl); ?>","description":"The directory for diesel repair shops and mobile diesel mechanics. Find service for RVs, trucks, and heavy equipment."}
+    {"@context":"https://schema.org","@type":"Organization","name":"<?php echo htmlspecialchars($siteName); ?>","url":"<?php echo htmlspecialchars($canonicalUrl); ?>","description":"The directory for diesel repair shops and mobile diesel mechanics. Find service for HD trucks, MD trucks, and fleet vehicles."}
     </script>
     <!-- Schema: FAQPage -->
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does diesel repair cost?","acceptedAnswer":{"@type":"Answer","text":"Diesel repair costs vary widely. Basic maintenance like oil changes run $150-$300, while injector replacement can cost $1,500-$4,000+. Mobile diesel mechanics typically charge $100-$175 per hour. Get multiple quotes for major repairs."}},{"@type":"Question","name":"Do mobile diesel mechanics come to you?","acceptedAnswer":{"@type":"Answer","text":"Yes. Many diesel repair shops offer mobile service. They come to your home, storage yard, campground, or roadside. Ideal for RVs, fleet vehicles, and trucks that are difficult to tow."}},{"@type":"Question","name":"What can mobile diesel mechanics fix?","acceptedAnswer":{"@type":"Answer","text":"Mobile diesel techs can handle common repairs on-site: diagnostics, fuel system work, electrical issues, air brake service, DEF problems, minor engine repairs, and routine maintenance. Major engine rebuilds usually require a shop."}},{"@type":"Question","name":"How do I find a reliable diesel mechanic?","acceptedAnswer":{"@type":"Answer","text":"Look for shops with ASE certifications, read Google reviews from diesel owners, ask for written estimates, and check if they work on your vehicle type (RV, pickup, semi, etc). Our directory lists verified shops with ratings to help you choose."}}]}
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does diesel repair cost?","acceptedAnswer":{"@type":"Answer","text":"Diesel repair costs vary widely. Basic maintenance like oil changes run $150-$300, while injector replacement can cost $1,500-$4,000+. Mobile diesel mechanics typically charge $100-$175 per hour. Get multiple quotes for major repairs."}},{"@type":"Question","name":"Do mobile diesel mechanics come to you?","acceptedAnswer":{"@type":"Answer","text":"Yes. Many diesel repair shops offer mobile service. They come to your yard, shop, jobsite, or roadside. Ideal for HD/MD trucks and fleet vehicles that are difficult to tow."}},{"@type":"Question","name":"What can mobile diesel mechanics fix?","acceptedAnswer":{"@type":"Answer","text":"Mobile diesel techs can handle common repairs on-site: diagnostics, fuel system work, electrical issues, air brake service, DEF problems, minor engine repairs, and routine maintenance. Major engine rebuilds usually require a shop."}},{"@type":"Question","name":"How do I find a reliable diesel mechanic?","acceptedAnswer":{"@type":"Answer","text":"Look for shops with ASE certifications, read Google reviews from truck owners and fleet managers, ask for written estimates, and check if they work on your vehicle type (HD, MD, semi, etc). Our directory lists verified shops with ratings to help you choose."}}]}
     </script>
     <!-- Schema: BreadcrumbList -->
     <script type="application/ld+json">
@@ -130,7 +130,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
                     Enter Your ZIP – Find the <span class="text-amber-300">Closest Diesel Repair</span>
                 </h1>
                 <p class="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-white/90">
-                    Diesel repair shops and mobile mechanics for RVs, trucks, and heavy equipment. Enter your ZIP or use your location—results sorted by distance.
+                    Diesel repair shops and mobile mechanics for HD and MD trucks, heavy duty, and fleet. Enter your ZIP or use your location—results sorted by distance.
                 </p>
 
                 <div class="mt-8 w-full max-w-lg mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20">
@@ -164,7 +164,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
                 <div class="mt-6 flex flex-wrap justify-center gap-6 text-white/85 text-sm">
                     <span class="flex items-center gap-2"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Sorted by distance</span>
                     <span class="flex items-center gap-2"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>Shops & mobile mechanics</span>
-                    <span class="flex items-center gap-2"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>RV, truck & heavy duty</span>
+                    <span class="flex items-center gap-2"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>HD & MD trucks</span>
                 </div>
             </div>
         </section>
@@ -184,7 +184,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
                     </div>
                     <div>
                         <dt class="text-lg font-semibold text-slate-800">Do mobile diesel mechanics come to you?</dt>
-                        <dd class="mt-2 text-slate-600">Yes. Many diesel shops offer mobile service—they come to your home, storage yard, campground, or roadside. Ideal for RVs, fleet vehicles, and trucks that are difficult to tow.</dd>
+                        <dd class="mt-2 text-slate-600">Yes. Many diesel shops offer mobile service—they come to your yard, shop, jobsite, or roadside. Ideal for HD/MD trucks and fleet vehicles that are difficult to tow.</dd>
                     </div>
                     <div>
                         <dt class="text-lg font-semibold text-slate-800">What can mobile diesel mechanics fix?</dt>
@@ -192,7 +192,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
                     </div>
                     <div>
                         <dt class="text-lg font-semibold text-slate-800">How do I find a reliable diesel mechanic?</dt>
-                        <dd class="mt-2 text-slate-600">Look for ASE certifications, read Google reviews from diesel owners, ask for written estimates, and check they work on your vehicle type (RV, pickup, semi). Our directory lists verified shops with ratings.</dd>
+                        <dd class="mt-2 text-slate-600">Look for ASE certifications, read Google reviews from truck owners and fleet managers, ask for written estimates, and check they work on your vehicle type (HD, MD, semi). Our directory lists verified shops with ratings.</dd>
                     </div>
                 </dl>
             </div>
@@ -202,7 +202,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
             <div class="container mx-auto px-4 max-w-4xl">
                 <h2 class="text-3xl font-bold text-center mb-6">About <?php echo htmlspecialchars($siteName); ?></h2>
                 <p class="text-slate-600 text-center">
-                    <?php echo htmlspecialchars($siteName); ?> helps you find diesel repair facilities sorted by distance. Whether you need service for an RV diesel engine, pickup truck, or heavy equipment—enter your ZIP code or use your current location to see nearby shops and mobile diesel mechanics.
+                    <?php echo htmlspecialchars($siteName); ?> helps you find diesel repair facilities sorted by distance. Whether you need service for HD trucks, MD trucks, or fleet vehicles—enter your ZIP code or use your current location to see nearby shops and mobile diesel mechanics.
                 </p>
             </div>
         </section>
@@ -210,7 +210,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
         <section id="get-listed" class="py-12 bg-slate-100 border-t border-slate-200">
             <div class="container mx-auto px-4 max-w-2xl text-center">
                 <h2 class="text-2xl font-bold text-slate-800 mb-3">Own a Diesel Repair Shop?</h2>
-                <p class="text-slate-600 mb-6">Get your business in front of drivers who need diesel service. Reach RV owners, fleet managers, and truckers searching for repair.</p>
+                <p class="text-slate-600 mb-6">Get your business in front of drivers who need diesel service. Reach fleet managers, truckers, and HD/MD truck owners searching for repair.</p>
                 <a href="mailto:<?php echo htmlspecialchars(config('contact_email', 'list@finddieselrepair.com')); ?>?subject=List%20my%20diesel%20repair%20business" class="inline-block bg-fdr-amber text-white font-semibold px-6 py-3 rounded-lg hover:bg-fdr-amber-dark transition">Get Listed</a>
             </div>
         </section>
