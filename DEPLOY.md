@@ -1,0 +1,30 @@
+# Deploy finddieselrepair.com
+
+Same pattern as rvrepairnearme.net: document root = `public/`. The folder on the server is **FDRepair**, so the document root is `FDRepair/public`.
+
+## Deploy to server
+
+Copy finddieselrepair into FDRepair on the server (rsync from your Mac):
+
+```bash
+# From your Mac — syncs into FDRepair on server
+rsync -avz --exclude '.git' \
+  /Users/forresthall/RVNEARME/NEWRVRNM/finddieselrepair/ \
+  bitnami@YOUR_SERVER:/opt/bitnami/htdocs/FDRepair/
+```
+
+## Apache (Bitnami)
+
+The vhost must point to **FDRepair/public**:
+
+```apache
+DocumentRoot "/opt/bitnami/htdocs/FDRepair/public"
+<Directory "/opt/bitnami/htdocs/FDRepair/public">
+```
+
+Copy `vhosts/finddieselrepair.conf` to `/opt/bitnami/apache/conf/vhosts/` and ensure the vhosts dir is included from the main config.
+
+## finddieselrepair-specific
+
+- **`.env`** at project root (copy from `.env.example`)
+- **Database**: Run `SQL/fdr-schema.sql`, then `php scripts/seed-db.php` with `data/ATWRF.csv`
