@@ -1,0 +1,21 @@
+.env
+.env.local
+env.txt
+
+# Config (when Get Found added)
+public/api/get-found/config.php
+
+# Data (keep schema, ignore sensitive CSVs)
+data/*.csv
+!data/.gitkeep
+
+# Uploads
+public/uploads/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Node (if used later)
+node_modules/
