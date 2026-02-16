@@ -6,11 +6,15 @@ Find the closest diesel repair facilities by ZIP code or current location. Resul
 
 ### 1. Database
 
-Create the tables:
+Uses existing `zips` and `cities_zip` tables (same as rvrepairnearme). Shop data goes in `FDR_IMPORT` (identical schema to IMPORT).
+
+Create `FDR_IMPORT` (same DB as rvrepairnearme so IMPORT exists):
 
 ```bash
 mysql -u root -p your_db < SQL/fdr-schema.sql
 ```
+
+This uses `CREATE TABLE FDR_IMPORT LIKE IMPORT` so the schema matches exactly. If IMPORT doesn't exist (standalone DB), use `SQL/fdr-schema-standalone.sql` instead.
 
 ### 2. Configuration
 
@@ -38,8 +42,8 @@ Point the web server document root at `public/`.
 ## Structure
 
 - `public/` — Document root (index.php, search.php)
-- `lib/` — Bootstrap, Database, geocode, RepairFacilityRepository
-- `SQL/` — Schema (fdr_listings, fdr_zips)
+- `lib/` — Bootstrap, Database, RepairFacilityRepository
+- `SQL/` — Schema (FDR_IMPORT; identical to IMPORT; uses existing zips, cities_zip)
 - `scripts/` — seed-db.php
 
 ## Get Found

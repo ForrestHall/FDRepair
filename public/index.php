@@ -6,6 +6,9 @@ $canonicalUrl = $baseUrl ?: ('https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')
 $ogImage = $canonicalUrl . '/images/og-image.jpg';
 $prefillZip = isset($_GET['zip']) ? preg_replace('/[^0-9]/', '', $_GET['zip']) : '';
 $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
+$prefillCity = isset($_GET['city']) ? trim($_GET['city']) : '';
+$prefillState = isset($_GET['state']) ? trim($_GET['state']) : '';
+$prefillValue = $prefillZip ?: ($prefillCity && $prefillState ? $prefillCity . ', ' . $prefillState : ($prefillCity ?: ''));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -100,7 +103,7 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <a href="./" class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <svg class="w-8 h-8 text-fdr-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2" ry="2" stroke-width="2"></rect><path d="M16 8h4l3 3v5h-7V8z" stroke-width="2"></path><circle cx="5.5" cy="18.5" r="2.5" stroke-width="2"></circle><circle cx="18.5" cy="18.5" r="2.5" stroke-width="2"></circle></svg>
+                    <svg class="w-8 h-8 text-fdr-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 14V9h4v5"/><rect x="6" y="9" width="12" height="6" rx="1"/><path d="M18 12h2v3h-2"/><circle cx="6.5" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
                     <span><?php echo htmlspecialchars($siteName); ?></span>
                 </a>
                 <div class="hidden md:flex items-center space-x-6">
@@ -134,10 +137,10 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
                 </p>
 
                 <div class="mt-8 w-full max-w-lg mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20">
-                    <form class="zip-form space-y-4" id="searchForm" role="search" aria-label="Find closest diesel repair by ZIP code">
+                    <form class="zip-form space-y-4" id="searchForm" role="search" aria-label="Find diesel repair by ZIP code or city, state">
                         <div>
-                            <label for="zipInput" class="sr-only">Enter your ZIP code to find the closest diesel repair facility</label>
-                            <input id="zipInput" class="zip-input w-full px-5 py-4 text-lg text-slate-800 rounded-lg border-0 focus:ring-4 focus:ring-white/30 search-glow" type="text" maxlength="5" autocomplete="postal-code" inputmode="numeric" placeholder="Enter your ZIP code" name="zipCode" value="<?php echo htmlspecialchars($prefillZip); ?>" required>
+                            <label for="zipInput" class="sr-only">ZIP code or city, state</label>
+                            <input id="zipInput" class="zip-input w-full px-5 py-4 text-lg text-slate-800 rounded-lg border-0 focus:ring-4 focus:ring-white/30 search-glow" type="text" autocomplete="off" placeholder="ZIP code or city, state" name="zipCode" value="<?php echo htmlspecialchars($prefillValue); ?>" required>
                         </div>
                         <fieldset class="text-center text-white">
                             <legend class="mb-2 text-white/80">Search within:</legend>
@@ -239,6 +242,30 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
         $('#mobile-menu-button').on('click', function(){ $('#mobile-menu').toggleClass('hidden'); $(this).attr('aria-expanded', $('#mobile-menu').hasClass('hidden') ? 'false' : 'true'); });
         $('#mobile-menu a').on('click', function(){ $('#mobile-menu').addClass('hidden'); $('#mobile-menu-button').attr('aria-expanded', 'false'); });
 
+        function buildSearchData(searchValue, distValue) {
+            var data = { myDist: distValue || '50' };
+            var trimmed = (searchValue || '').trim();
+            if (/^\d+$/.test(trimmed)) {
+                data.myZip = trimmed;
+            } else if (trimmed) {
+                var city = trimmed, state = '';
+                if (trimmed.indexOf(',') !== -1) {
+                    var idx = trimmed.indexOf(',');
+                    city = trimmed.substring(0, idx).trim();
+                    state = trimmed.substring(idx + 1).trim();
+                } else {
+                    var parts = trimmed.split(/\s+/);
+                    if (parts.length >= 2 && parts[parts.length - 1].length === 2) {
+                        city = parts.slice(0, -1).join(' ').trim();
+                        state = parts[parts.length - 1];
+                    }
+                }
+                data.city = city;
+                data.state = state;
+            }
+            return data;
+        }
+
         function handleSearchResponse(resp){
             var list = (resp && resp.results) ? resp.results : (Array.isArray(resp) ? resp : []);
             var err = (resp && resp.error) ? resp.error : null;
@@ -271,12 +298,12 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
                 '</div></article>';
         }
 
-        <?php if ($prefillZip): ?>
+        <?php if ($prefillValue): ?>
         (function autoSearch(){
-            var zip = $('#zipInput').val().replace(/\D/g,'').slice(0,5);
-            if (zip.length === 5) {
+            var val = $('#zipInput').val();
+            if ((val || '').trim()) {
                 $('.results-container').html('<div class="col-span-full text-center py-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-fdr-amber border-t-transparent"></div><p class="mt-2 text-slate-600">Finding closest diesel repair...</p></div>');
-                $.ajax({ url: 'search.php', type: 'POST', data: { myZip: zip, myDist: $('input[name=dist]:checked').val() }, dataType: 'json' })
+                $.ajax({ url: 'search.php', type: 'POST', data: buildSearchData(val, $('input[name=dist]:checked').val()), dataType: 'json' })
                     .done(handleSearchResponse)
                     .fail(function(){ $('.results-container').html('<div class="col-span-full text-center py-8 text-red-600">Something went wrong. Try again.</div>'); });
             }
@@ -285,10 +312,12 @@ $prefillZip = strlen($prefillZip) >= 5 ? substr($prefillZip, 0, 5) : '';
 
         $('#searchForm').submit(function(e){
             e.preventDefault();
-            var zip = $('#zipInput').val().replace(/\D/g,'').slice(0,5);
-            if (zip.length < 5) { $('.results-container').html('<div class="col-span-full text-center py-8 text-red-600">Please enter a valid 5-digit ZIP code.</div>'); return; }
+            var searchVal = ($('#zipInput').val() || '').trim();
+            if (!searchVal) { $('.results-container').html('<div class="col-span-full text-center py-8 text-red-600">Please enter a ZIP code or city, state.</div>'); return; }
+            var zipOnly = searchVal.replace(/\D/g,'');
+            if (/^\d+$/.test(searchVal) && zipOnly.length < 5) { $('.results-container').html('<div class="col-span-full text-center py-8 text-red-600">Please enter a valid 5-digit ZIP code.</div>'); return; }
             $('.results-container').html('<div class="col-span-full text-center py-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-fdr-amber border-t-transparent"></div><p class="mt-2 text-slate-600">Finding closest diesel repair...</p></div>');
-            $.ajax({ url: 'search.php', type: 'POST', data: { myZip: zip, myDist: $('input[name=dist]:checked').val() }, dataType: 'json' })
+            $.ajax({ url: 'search.php', type: 'POST', data: buildSearchData(searchVal, $('input[name=dist]:checked').val()), dataType: 'json' })
                 .done(handleSearchResponse)
                 .fail(function(){ $('.results-container').html('<div class="col-span-full text-center py-8 text-red-600">Something went wrong. Try again.</div>'); });
         });

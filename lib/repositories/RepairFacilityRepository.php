@@ -1,6 +1,7 @@
 <?php
 /**
- * Diesel repair listings (fdr_listings) by distance.
+ * Diesel repair shop listings (FDR_IMPORT) by distance.
+ * FDR_IMPORT has identical schema to IMPORT.
  */
 class RepairFacilityRepository {
     private mysqli $conn;
@@ -16,10 +17,10 @@ class RepairFacilityRepository {
         $result = [];
         $stmt = $this->conn->prepare("
             SELECT *, ST_Distance_Sphere(POINT(?, ?), POINT(longitude, latitude)) * 0.000621371192 AS distance_in_miles
-            FROM fdr_listings
+            FROM FDR_IMPORT
             WHERE latitude IS NOT NULL AND longitude IS NOT NULL
             HAVING distance_in_miles <= ?
-            ORDER BY COALESCE(VERIFIED, 0) DESC, distance_in_miles ASC
+            ORDER BY COALESCE(top_pick, 0) DESC, COALESCE(VERIFIED, 0) DESC, distance_in_miles ASC
         ");
         if (!$stmt) return $result;
         $stmt->bind_param('ddi', $lng, $lat, $dist);
@@ -39,6 +40,8 @@ class RepairFacilityRepository {
                 'MAP' => $row['MAP'] ?? '',
                 'MOBILE' => $row['MOBILE'] ?? '',
                 'VERIFIED' => $row['VERIFIED'] ?? '',
+                'WARRANTY' => $row['WARRANTY'] ?? '',
+                'top_pick' => !empty($row['top_pick']),
                 'distance_in_miles' => $d,
                 'LAT' => isset($row['latitude']) ? (float) $row['latitude'] : null,
                 'LNG' => isset($row['longitude']) ? (float) $row['longitude'] : null,

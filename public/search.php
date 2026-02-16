@@ -1,11 +1,12 @@
 <?php
 /**
- * Unified search: diesel shops by ZIP code or by lat/lng.
- * POST: myZip + myDist  OR  mylat + mylng + myDist
+ * Unified search: diesel shops by ZIP code, city+state, or lat/lng.
+ * Uses zips and cities_zip tables. Fallback: FDR_IMPORT.
+ * POST: myZip + myDist  OR  city + state + myDist  OR  mylat + mylng + myDist
  * Returns JSON: { "results": [...], "query": {...}, "error": null|string }
  */
 require_once __DIR__ . '/../lib/bootstrap.php';
-require_once __DIR__ . '/../lib/geocode.php';
+require_once __DIR__ . '/../../lib/repositories/ZipRepository.php';
 require_once __DIR__ . '/../lib/repositories/RepairFacilityRepository.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -25,17 +26,43 @@ if (!$conn) {
     exit;
 }
 
+$zipRepo = new ZipRepository($conn);
+
 if (!empty($input['zip']) || !empty($input['myZip'])) {
     $zipRaw = $input['zip'] ?? $input['myZip'];
-    $zip = preg_replace('/[^0-9]/', '', $zipRaw);
+    $zip = preg_replace('/[^0-9]/', '', trim((string) $zipRaw));
     $zip = strlen($zip) >= 5 ? substr($zip, 0, 5) : null;
     if ($zip) {
-        $geo = fdr_geocode_zip($zip, $conn);
-        if ($geo) {
-            $lat = $geo[0];
-            $lng = $geo[1];
+        $ll = $zipRepo->getLatLngByZip($zip);
+        if (!$ll) {
+            $res = $conn->query("SELECT latitude AS lat, longitude AS lng FROM FDR_IMPORT WHERE ZIPCODE = '" . $conn->real_escape_string($zip) . "' AND latitude IS NOT NULL AND longitude IS NOT NULL LIMIT 1");
+            if ($res && $row = $res->fetch_assoc()) {
+                $ll = ['lat' => (float) $row['lat'], 'lng' => (float) $row['lng']];
+            }
+        }
+        if ($ll) {
+            $lat = $ll['lat'];
+            $lng = $ll['lng'];
             $queryType = 'zip';
         }
+    }
+} elseif (!empty(trim((string) ($input['city'] ?? '')))) {
+    $city = strtoupper(trim((string) $input['city']));
+    $stateRaw = trim((string) ($input['state'] ?? ''));
+    $state = $stateRaw !== '' ? (ZipRepository::stateNameToAbbr($stateRaw) ?? (strlen($stateRaw) === 2 ? strtoupper($stateRaw) : null)) : null;
+    $ll = $zipRepo->getLatLngByCityState($city, $state ?? '');
+    if (!$ll && $state !== null && $state !== '') {
+        $cityEsc = $conn->real_escape_string($city);
+        $stateEsc = $conn->real_escape_string($state);
+        $res = $conn->query("SELECT latitude AS lat, longitude AS lng FROM FDR_IMPORT WHERE UPPER(TRIM(CITY)) = '" . $cityEsc . "' AND UPPER(TRIM(STATE)) = '" . $stateEsc . "' AND latitude IS NOT NULL AND longitude IS NOT NULL LIMIT 1");
+        if ($res && $row = $res->fetch_assoc()) {
+            $ll = ['lat' => (float) $row['lat'], 'lng' => (float) $row['lng']];
+        }
+    }
+    if ($ll) {
+        $lat = $ll['lat'];
+        $lng = $ll['lng'];
+        $queryType = 'city';
     }
 } elseif (isset($input['lat'], $input['lng']) || isset($input['mylat'], $input['mylng'])) {
     $lat = (float) ($input['lat'] ?? $input['mylat']);
@@ -54,8 +81,10 @@ $response = [
 if ($lat === null || $lng === null) {
     if ($zip !== null) {
         $response['error'] = "We couldn't find coordinates for that ZIP code. Please check the number and try again.";
+    } elseif (!empty(trim((string) ($input['city'] ?? '')))) {
+        $response['error'] = "We couldn't find that city. Try a different spelling or use \"city, state\" (e.g. Phoenix, AZ).";
     } else {
-        $response['error'] = 'Please provide a ZIP code or your location (lat/lng).';
+        $response['error'] = 'Please provide a ZIP code, city and state, or your location (lat/lng).';
     }
     echo json_encode($response);
     exit;
