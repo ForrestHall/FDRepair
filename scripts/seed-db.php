@@ -19,6 +19,7 @@ if (!is_readable($csvPath)) {
 }
 
 require_once $projectRoot . '/lib/bootstrap.php';
+require_once dirname($projectRoot) . '/lib/repositories/ZipRepository.php';
 
 $conn = Database::getMysqli();
 if (!$conn) {
@@ -60,15 +61,17 @@ if (empty($colMap['NAME'])) {
 }
 
 $insertListing = $conn->prepare(
-    "INSERT INTO fdr_listings (NAME, ADDRESS, CITY, STATE, ZIPCODE, PHONE, SITE, MAP, RATE, MOBILE, VERIFIED, latitude, longitude, PLACE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    "INSERT INTO FDR_IMPORT (NAME, ADDRESS, CITY, STATE, ZIPCODE, PHONE, SITE, MAP, RATE, MOBILE, VERIFIED, latitude, longitude, PLACE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 $insertListingNoGeo = $conn->prepare(
-    "INSERT INTO fdr_listings (NAME, ADDRESS, CITY, STATE, ZIPCODE, PHONE, SITE, MAP, RATE, MOBILE, VERIFIED, PLACE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    "INSERT INTO FDR_IMPORT (NAME, ADDRESS, CITY, STATE, ZIPCODE, PHONE, SITE, MAP, RATE, MOBILE, VERIFIED, PLACE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
-$insertZip = $conn->prepare("INSERT INTO fdr_zips (ZIP, LAT, LNG, CITY, STATE) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LAT = VALUES(LAT), LNG = VALUES(LNG), CITY = VALUES(CITY), STATE = VALUES(STATE)");
+$insertZip = $conn->prepare("INSERT INTO zips (ZIP, LAT, LNG) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE LAT = VALUES(LAT), LNG = VALUES(LNG)");
+$insertCityZip = $conn->prepare("INSERT INTO cities_zip (CITY, STATE, LAT, LNG, ZIP) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LAT = VALUES(LAT), LNG = VALUES(LNG), ZIP = VALUES(ZIP)");
 
 $listingsInserted = 0;
 $zipsSeen = [];
+$citiesSeen = [];
 
 while (($row = fgetcsv($handle)) !== false) {
     if (count($row) < 2) continue;
@@ -103,14 +106,28 @@ while (($row = fgetcsv($handle)) !== false) {
     $listingsInserted++;
     if ($zipcode !== null && $zipcode !== '' && $lat !== null && $lng !== null && !isset($zipsSeen[$zipcode])) {
         $zipsSeen[$zipcode] = true;
-        $insertZip->bind_param('sddss', $zipcode, $lat, $lng, $city, $state);
+        $insertZip->bind_param('sdd', $zipcode, $lat, $lng);
         $insertZip->execute();
+    }
+    if ($city !== null && $city !== '' && $state !== null && $state !== '' && $lat !== null && $lng !== null) {
+        $ck = strtoupper(trim($city)) . '|' . strtoupper(trim($state));
+        if (!isset($citiesSeen[$ck])) {
+            $citiesSeen[$ck] = true;
+            $cu = strtoupper(trim($city));
+            $su = strlen(trim($state)) === 2 ? strtoupper(trim($state)) : (ZipRepository::stateNameToAbbr($state) ?? strtoupper(trim($state)));
+            if ($su !== '') {
+                $insertCityZip->bind_param('ssdds', $cu, $su, $lat, $lng, $zipcode ?? '');
+                $insertCityZip->execute();
+            }
+        }
     }
 }
 fclose($handle);
 $insertListing->close();
 $insertListingNoGeo->close();
 $insertZip->close();
+$insertCityZip->close();
 
 echo "Seeded {$listingsInserted} listings from " . basename($csvPath) . ".\n";
-echo "ZIP codes in fdr_zips: " . count($zipsSeen) . ".\n";
+echo "ZIP codes in zips: " . count($zipsSeen) . ".\n";
+echo "City/state in cities_zip: " . count($citiesSeen) . ".\n";
