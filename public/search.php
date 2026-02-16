@@ -22,7 +22,8 @@ $queryType = null;
 
 $conn = Database::getMysqli();
 if (!$conn) {
-    echo json_encode(['results' => [], 'query' => [], 'error' => 'Database unavailable']);
+    $detail = Database::$lastError ?: 'Check .env (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME)';
+    echo json_encode(['results' => [], 'query' => [], 'error' => 'Database unavailable: ' . $detail]);
     exit;
 }
 
